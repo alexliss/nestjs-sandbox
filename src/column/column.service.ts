@@ -16,7 +16,7 @@ export class ColumnService {
       ) {}
 
 
-    async createColumn(data: ColumnDtoRequest): Promise<ColumnDtoResponse> {
+    async create(data: ColumnDtoRequest): Promise<ColumnDtoResponse> {
         let newColumn = new ColumnEntity();
         newColumn.name = data.name;
         let user = await this.userRepository.findOne({ where: { id: data.userId }, relations: ['columns'] });
@@ -24,5 +24,9 @@ export class ColumnService {
         newColumn = await this.columnRepository.save(newColumn);
         user = await this.userRepository.save(user);
         return new ColumnDtoResponse(newColumn.id, newColumn.name, user.id, newColumn.createdAt)
+    }
+
+    async delete(id: number) {
+        return await this.columnRepository.delete(id)
     }
 }

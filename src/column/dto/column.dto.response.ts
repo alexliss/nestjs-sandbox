@@ -3,5 +3,5 @@ export class ColumnDtoResponse {
     readonly id: number,
     readonly name: string,
     readonly userId: number,
-    readonly createdAt: Date,) {}
+    readonly createdAt: Date) {}
 }

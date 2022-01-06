@@ -9,6 +9,6 @@ export class ColumnController {
     
     @Post()
     async create(@Body() data: ColumnDtoRequest): Promise<ColumnDtoResponse> {
-        return this.columnService.createColumn(data);
+        return this.columnService.create(data);
     }
 }
