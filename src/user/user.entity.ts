@@ -25,7 +25,7 @@ export class UserEntity {
         this.password = password;
     }
 
-    @OneToMany(type => ColumnEntity, columns => columns.user, {eager: true})
+    @OneToMany(type => ColumnEntity, columns => columns.user)
     columns: ColumnEntity[];
 
 }

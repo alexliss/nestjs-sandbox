@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
+import { IsNotEmpty } from 'class-validator';
 import { UserDtoRegisterRequest } from './dto/register/user.dto.register.request';
 import { UserDtoRegisterResponse } from './dto/register/user.dto.register.response';
 import { UserDtoRequest } from './dto/user.dto.request';
@@ -16,18 +17,23 @@ export class UserController {
         return this.userService.createNewUser(userData);
     }
 
+    @Get()
+    async getAll(): Promise<UserDtoResponse[]> {
+        return this.userService.getAll()
+    }
+
     @Get(':id')
-    async getById(@Param('id') id: number): Promise<UserDtoResponse> {
+    async getById(@Param('id', ParseIntPipe) id: number): Promise<UserDtoResponse> {
         return this.userService.findById(id)
     }
 
     @Put(':id')
-    async update(@Param('id') id: number, @Body() newData: UserDtoRequest) {
+    async update(@Param('id', ParseIntPipe) id: number, @Body() newData: UserDtoRequest) {
         return this.userService.updateById(id, newData)
     }
 
     @Delete(':id')
-    async delete(@Param('id') id: number) {
+    async delete(@Param('id', ParseIntPipe) id: number) {
         return this.userService.delete(id)
     }
 
