@@ -7,43 +7,43 @@ import { CardDtoResponse } from './dto/card.dto.response';
 export class CardController {
     constructor(private readonly cardService: CardService) {}
 
-    @Post('users/:userId/columns/:columnId/cards')
+    @Post('columns/:columnId/cards')
     async create(
-        @Param('userId', ParseIntPipe) userId: number,
         @Param('columnId', ParseIntPipe) columnId: number,
-        @Body() data: CardDtoRequest): Promise<CardDtoResponse> {
-            return this.cardService.create(userId, columnId, data)
-        } 
+        @Body() data: CardDtoRequest
+    ): Promise<CardDtoResponse> {
+        return this.cardService.create(columnId, data)
+    } 
 
-    @Get('users/:userId/columns/:columnId/cards')
+    @Get('columns/:columnId/cards')
     async getAllByColumnId(
-        @Param('userId', ParseIntPipe) userId: number,
-        @Param('columnId', ParseIntPipe) columnId: number): Promise<CardDtoResponse[]> {
-            return this.cardService.getAllByColumnId(userId, columnId)
-        }
+        @Param('columnId', ParseIntPipe) columnId: number
+    ): Promise<CardDtoResponse[]> {
+        return this.cardService.getAllByColumnId(columnId)
+    }
 
-    @Get('users/:userId/columns/:columnId/cards/:cardId')
+    @Get('columns/:columnId/cards/:cardId')
     async getById(
-        @Param('userId', ParseIntPipe) userId: number,
         @Param('columnId', ParseIntPipe) columnId: number,
-        @Param('cardId', ParseIntPipe) cardId): Promise<CardDtoResponse> {
-            return this.cardService.getById(userId, columnId, cardId)
-        }
+        @Param('cardId', ParseIntPipe) cardId
+    ): Promise<CardDtoResponse> {
+        return this.cardService.getById(columnId, cardId)
+    }
 
-    @Put('users/:userId/columns/:columnId/cards/:cardId')
+    @Put('columns/:columnId/cards/:cardId')
     async update(
-        @Param('userId', ParseIntPipe) userId: number,
         @Param('columnId', ParseIntPipe) columnId: number,
         @Param('cardId', ParseIntPipe) cardId,
-        @Body() data: CardDtoRequest) {
-            return this.cardService.update(userId, columnId, cardId, data)
-        }
+        @Body() data: CardDtoRequest
+    ) {
+        return this.cardService.update(columnId, cardId, data)
+    }
     
-    @Delete('users/:userId/columns/:columnId/cards/:cardId')
+    @Delete('columns/:columnId/cards/:cardId')
     async delete(
-        @Param('userId', ParseIntPipe) userId: number,
         @Param('columnId', ParseIntPipe) columnId: number,
-        @Param('cardId', ParseIntPipe) cardId) {
-            return this.cardService.delete(userId, columnId, cardId)
-        }
+        @Param('cardId', ParseIntPipe) cardId
+    ) {
+        return this.cardService.delete(columnId, cardId)
+    }
 }

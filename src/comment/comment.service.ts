@@ -21,151 +21,123 @@ export class CommentService {
         private readonly userRepository: Repository<UserEntity>
     ) {}
 
-    private async cardExistenceCheck(
-        columnId: number, 
-        cardId: number) {
-        const column = await this.columnRepository.findOne(columnId);
-        if (!column) 
-            throw new HttpException({ Column: ' not found' }, 404);
-        const card = await this.cardRepository.findOne({
-            where: {
-                id: cardId,
-                column: {
-                    id: columnId
-                }
-            }
-        });
+    private async cardExistenceCheck(cardId: number) {
+        const card = await this.cardRepository.findOne(cardId);
         if (!card) 
             throw new HttpException({ Card: ' not found'}, 404);
     }
 
-    async create( 
-        columnId: number,
-        cardId: number,
-        data: CommentDtoRequest): Promise<CommentDtoResponse> {
-            await this.cardExistenceCheck(columnId, cardId);
-            const user = await this.userRepository.findOne({
-                where: {
-                    id: data.userId
-                },
-                relations: ['comments']
-            });
-            if (!user) {
-                throw new HttpException({CommentUser: ' not found'}, 404)
-            }
-            const card = await this.cardRepository.findOne({
-                where: {
-                    id: cardId
-                },
-                relations: ['comments']
-            });
-            let comment = new CommentEntity(data);
-            user.comments.push(comment);
-            card.comments.push(comment);
-            comment = await this.commentRepository.save(comment);
-            this.userRepository.save(user);
-            this.cardRepository.save(card);
-            return new CommentDtoResponse(
-                comment.id, 
-                data.userId, 
-                comment.text, 
-                comment.createdAt,
-                comment. updatedAt)
+    async create(cardId: number,data: CommentDtoRequest): Promise<CommentDtoResponse> {
+        await this.cardExistenceCheck(cardId);
+        const user = await this.userRepository.findOne({
+            where: {
+                id: data.userId
+            },
+            relations: ['comments']
+        });
+        if (!user) 
+            throw new HttpException({CommentUser: ' not found'}, 404)
+
+        const card = await this.cardRepository.findOne({
+            where: {
+                id: cardId
+            },
+            relations: ['comments']
+        });
+        let comment = new CommentEntity(data);
+        user.comments.push(comment);
+        card.comments.push(comment);
+        comment = await this.commentRepository.save(comment);
+        this.userRepository.save(user);
+        this.cardRepository.save(card);
+        return new CommentDtoResponse(
+            comment.id, 
+            data.userId, 
+            comment.text, 
+            comment.createdAt,
+            comment. updatedAt)
     }
 
-    async getById(
-        columnId: number, 
-        cardId: number,
-        commentId: number): Promise<CommentDtoResponse> {
-            await this.cardExistenceCheck(columnId, cardId)
-            const comment = await this.commentRepository.findOne({
-                where: {
-                    id: commentId,
-                    card: {
-                        id: cardId
-                    }
-                },
-                relations: ['user']
-            })
-            if (!comment) {
-                throw new HttpException({ Comment: ' not found'}, 404)
-            }
+    async getById(cardId: number, commentId: number): Promise<CommentDtoResponse> {
+        await this.cardExistenceCheck(cardId)
+        const comment = await this.commentRepository.findOne({
+            where: {
+                id: commentId,
+                card: {
+                    id: cardId
+                }
+            },
+            relations: ['user']
+        })
+        if (!comment)
+            throw new HttpException({ Comment: ' not found'}, 404)
 
-            return new CommentDtoResponse(
-                comment.id, 
-                comment.user.id, 
-                comment.text, 
-                comment.createdAt,
-                comment.updatedAt)
-        }
+        return new CommentDtoResponse(
+            comment.id, 
+            comment.user.id, 
+            comment.text, 
+            comment.createdAt,
+            comment.updatedAt)
+    }
 
-    async getAllByCardId(
-        columnId: number,
-        cardId: number): Promise<CommentDtoResponse[]> {
-            await this.cardExistenceCheck(columnId, cardId)
-            const comments = await this.commentRepository.find({
-                where: {
-                    card: {
-                        id: cardId
-                    }
-                },
-                relations: ['user']
-            })
-            return comments.map(comment =>
-                new CommentDtoResponse(
-                    comment.id,
-                    comment.user.id,
-                    comment.text,
-                    comment.createdAt,
-                    comment.updatedAt))
-        }
-    
-    async update(
-        columnId: number,
-        cardId: number,
-        commentId: number,
-        data: CommentDtoRequest): Promise<CommentDtoResponse> {
-            await this.cardExistenceCheck(columnId, cardId);
-            let comment = await this.commentRepository.findOne({
-                where: {
-                    id: commentId,
-                    card: {
-                        id: cardId
-                    }
-                },
-                relations: ['user']
-            })
-            if (!comment) {
-                throw new HttpException({ Card: ' not found'}, 404)
-            }
-            comment.text = data.text;
-            comment = await this.commentRepository.save(comment);
-
-            return new CommentDtoResponse(
+    async getAllByCardId(cardId: number): Promise<CommentDtoResponse[]> {
+        await this.cardExistenceCheck(cardId)
+        const comments = await this.commentRepository.find({
+            where: {
+                card: {
+                    id: cardId
+                }
+            },
+            relations: ['user']
+        })
+        return comments.map(comment =>
+            new CommentDtoResponse(
                 comment.id,
                 comment.user.id,
                 comment.text,
                 comment.createdAt,
-                comment.updatedAt
-            )
-        }
-
-    async delete( 
-        columnId: number, 
-        cardId: number, 
-        commentId: number) {
-            await this.cardExistenceCheck(columnId, cardId);
-            let comment = await this.commentRepository.findOne({
-                where: {
-                    id: commentId,
-                    card: {
-                        id: cardId
-                    }
+                comment.updatedAt))
+    }
+    
+    async update(cardId: number, commentId: number, data: CommentDtoRequest): Promise<CommentDtoResponse> {
+        await this.cardExistenceCheck(cardId);
+        let comment = await this.commentRepository.findOne({
+            where: {
+                id: commentId,
+                card: {
+                    id: cardId
                 }
-            })
-            if (!comment) {
-                throw new HttpException({ Card: ' not found'}, 404)
+            },
+            relations: ['user']
+        })
+        if (!comment) 
+            throw new HttpException({ Card: ' not found'}, 404)
+
+        comment.text = data.text;
+        comment = await this.commentRepository.save(comment);
+
+        return new CommentDtoResponse(
+            comment.id,
+            comment.user.id,
+            comment.text,
+            comment.createdAt,
+            comment.updatedAt
+        )
+    }
+
+    async delete(cardId: number, commentId: number) {
+        await this.cardExistenceCheck(cardId);
+        let comment = await this.commentRepository.findOne({
+            where: {
+                id: commentId,
+                card: {
+                    id: cardId
+                }
             }
-            return await this.commentRepository.delete(commentId)
-        }
+        })
+        if (!comment) 
+            throw new HttpException({ Card: ' not found'}, 404)
+
+        return await this.commentRepository.delete(commentId)
+    }
 }

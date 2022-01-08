@@ -7,48 +7,44 @@ import { CommentDtoResponse } from './dto/comment.dto.response';
 export class CommentController {
     constructor(private readonly commentService: CommentService) {}
 
-    @Post('columns/:columnId/cards/:cardId')
+    @Post('cards/:cardId/comments')
     async create(
-        @Param('columnId', ParseIntPipe) columnId: number,
         @Param('cardId', ParseIntPipe) cardId: number,
-        @Body() data: CommentDtoRequest): Promise<CommentDtoResponse> {
-            return this.commentService.create(columnId, cardId, data)
+        @Body() data: CommentDtoRequest
+    ): Promise<CommentDtoResponse> {
+            return this.commentService.create(cardId, data)
         }
 
-    @Get('columns/:columnId/cards/:cardId/comments')
+    @Get('cards/:cardId/comments')
     async getAllByCardId(
-        @Param('columnId', ParseIntPipe) columnId: number,
         @Param('cardId', ParseIntPipe) cardId: number
     ): Promise<CommentDtoResponse[]> {
-        return this.commentService.getAllByCardId(columnId, cardId)
+        return this.commentService.getAllByCardId(cardId)
     }
 
-    @Get('columns/:columnId/cards/:cardId/comments/:commentId')
+    @Get('cards/:cardId/comments/:commentId')
     async getById(
-        @Param('columnId', ParseIntPipe) columnId: number,
         @Param('cardId', ParseIntPipe) cardId: number,
         @Param('commentId', ParseIntPipe) commentId: number
     ): Promise<CommentDtoResponse> {
-        return this.commentService.getById(columnId, cardId, commentId)
+        return this.commentService.getById(cardId, commentId)
     }
 
-    @Put('columns/:columnId/cards/:cardId/comments/:commentId')
+    @Put('cards/:cardId/comments/:commentId')
     async update(
-        @Param('columnId', ParseIntPipe) columnId: number,
         @Param('cardId', ParseIntPipe) cardId: number,
         @Param('commentId', ParseIntPipe) commentId: number,
         @Body() data: CommentDtoRequest
     ): Promise<CommentDtoResponse> {
-        return this.commentService.update(columnId, cardId, commentId, data)
+        return this.commentService.update(cardId, commentId, data)
     }
 
-    @Delete('columns/:columnId/cards/:cardId/comments/:commentId')
+    @Delete('cards/:cardId/comments/:commentId')
     async delete(
-        @Param('columnId', ParseIntPipe) columnId: number,
         @Param('cardId', ParseIntPipe) cardId: number,
         @Param('commentId', ParseIntPipe) commentId: number
     ) {
-        return this.commentService.delete(columnId, cardId, commentId)
+        return this.commentService.delete(cardId, commentId)
     }
 
 }

@@ -26,9 +26,8 @@ export class UserService {
             { email : data.email },
             { name : data.name }]
         });
-        if (maybeUser) {
+        if (maybeUser) 
             throw new HttpException({ User: ' invalid data' }, 404);
-        }
 
         let newUser = new UserEntity(data.name, data.email, data.password);
         newUser = await this.userRepository.save(newUser);
@@ -50,13 +49,13 @@ export class UserService {
         if (!user) 
             throw new HttpException({ User: ' not found' }, 404);
 
-        if (await this.userRepository.findOne(
-            { where: [
-              { email : newData.email, id: Not(id) },
-              { name : newData.name, id: Not(id) }]
-            } )) {
-              throw new HttpException({ User: ' invalid data' }, 404);
-            }
+        if (await this.userRepository.findOne({ 
+          where: [
+            { email : newData.email, id: Not(id) },
+            { name : newData.name, id: Not(id) }]
+          } )) {
+            throw new HttpException({ User: ' invalid data' }, 404);
+          }
         user.name = newData.name;
         user.password = newData.password;
         user.email = newData.email;

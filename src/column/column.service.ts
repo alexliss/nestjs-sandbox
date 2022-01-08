@@ -13,8 +13,7 @@ export class ColumnService {
         private readonly columnRepository: Repository<ColumnEntity>,
         @InjectRepository(UserEntity)
         private readonly userRepository: Repository<UserEntity>
-      ) {}
-
+    ) {}
 
     async create(data: ColumnDtoRequest, userId: number): Promise<ColumnDtoResponse> {
         let сolumn = new ColumnEntity();

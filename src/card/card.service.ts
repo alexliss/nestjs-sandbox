@@ -1,7 +1,6 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ColumnEntity } from 'src/column/column.entity';
-import { ColumnDtoResponse } from 'src/column/dto/column.dto.response';
 import { UserEntity } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
 import { CardEntity } from './card.entity';
@@ -19,25 +18,14 @@ export class CardService {
         private readonly userRepository: Repository<UserEntity>
       ) {}
 
-    private async columnExistenceCheck(columnOwnerId: number, columnId: number) {
-        const user = await this.userRepository.findOne(columnOwnerId);
-        if (!user) {
-            throw new HttpException({ User: ' not found'}, 404)
-        }
-        const column = await this.columnRepository.findOne({ 
-            where: { 
-                id: columnId,
-                user: {
-                    id: columnOwnerId
-                }
-            } 
-        });
+    private async columnExistenceCheck(columnId: number) {
+        const column = await this.columnRepository.findOne(columnId);
         if (!column) 
             throw new HttpException({ Column: ' not found' }, 404);
     }
 
-    async create(columnOwnerId: number, columnId: number, data: CardDtoRequest): Promise<CardDtoResponse> {
-        await this.columnExistenceCheck(columnOwnerId, columnId)
+    async create(columnId: number, data: CardDtoRequest): Promise<CardDtoResponse> {
+        await this.columnExistenceCheck(columnId)
 
         const user = await this.userRepository.findOne({
             where: {
@@ -45,9 +33,8 @@ export class CardService {
             },
             relations: ['cards']
         })
-        if (!user) {
+        if (!user)
             throw new HttpException({ CardUser: ' not found'}, 404)
-        }
 
         const column = await this.columnRepository.findOne({
             where: {
@@ -67,8 +54,8 @@ export class CardService {
         return new CardDtoResponse(card, user.id, column.id);
     }
 
-    async getById(columnOwnerId: number, columnId: number, cardId: number): Promise<CardDtoResponse> {
-        await this.columnExistenceCheck(columnOwnerId, columnId);
+    async getById(columnId: number, cardId: number): Promise<CardDtoResponse> {
+        await this.columnExistenceCheck(columnId);
         const card = await this.cardRepository.findOne({
             where: {
                 id: cardId,
@@ -76,17 +63,16 @@ export class CardService {
                     id: columnId
                 }
             },
-            relations: ['column', 'user']
+            relations: ['user']
         })
-        if (!card) {
+        if (!card)
             throw new HttpException({ Card: ' not found'}, 404)
-        }
 
-        return new CardDtoResponse(card, card.user.id, card.column.id )
+        return new CardDtoResponse(card, card.user.id, columnId )
     }
 
-    async getAllByColumnId(columnOwnerId: number, columnId: number): Promise<CardDtoResponse[]> {
-        await this.columnExistenceCheck(columnOwnerId, columnId)
+    async getAllByColumnId(columnId: number): Promise<CardDtoResponse[]> {
+        await this.columnExistenceCheck(columnId)
         const cards = await this.cardRepository.find({
             where: {
                 column: {
@@ -100,9 +86,8 @@ export class CardService {
             new CardDtoResponse(card, card.user.id, columnId))
     }
 
-    async update(columnOwnerId: number, columnId: number, cardId: number, data: CardDtoRequest)
-        : Promise<CardDtoResponse> {
-        await this.columnExistenceCheck(columnOwnerId, columnId);
+    async update(columnId: number, cardId: number, data: CardDtoRequest): Promise<CardDtoResponse> {
+        await this.columnExistenceCheck(columnId);
         const card = await this.cardRepository.findOne({
             where: {
                 id: cardId,
@@ -112,9 +97,8 @@ export class CardService {
             },
             relations: ['user']
         })
-        if (!card) {
+        if (!card)
             throw new HttpException({ Card: ' not found'}, 404)
-        }
 
         card.title = data.title;
         card.description = data.description;
@@ -123,20 +107,18 @@ export class CardService {
         return new CardDtoResponse(card, card.user.id, columnId);
     }
 
-    async delete(columnOwnerId: number, columnId: number, cardId: number) {
-        await this.columnExistenceCheck(columnOwnerId, columnId);
+    async delete(columnId: number, cardId: number) {
+        await this.columnExistenceCheck(columnId);
         const card = await this.cardRepository.findOne({
             where: {
                 id: cardId,
                 column: {
                     id: columnId
                 }
-            },
-            relations: ['user']
+            }
         })
-        if (!card) {
+        if (!card)
             throw new HttpException({ Card: ' not found'}, 404)
-        }
 
         return await this.cardRepository.delete(cardId)
     }
