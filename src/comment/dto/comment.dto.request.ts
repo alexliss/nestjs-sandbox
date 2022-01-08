@@ -5,4 +5,9 @@ export class CommentDtoRequest {
     readonly userId: number;
     @IsNotEmpty()
     readonly text: string;
+
+    constructor(userId: number, text: string) {
+        this.userId = userId;
+        this.text = text;
+    }
 }

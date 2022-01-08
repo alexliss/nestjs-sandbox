@@ -24,7 +24,7 @@ export class CommentEntity {
     @ManyToOne(type => CardEntity, card => card.comments)
     card: CardEntity;
 
-    constructor(data: CommentDtoRequest) {
-        this.text = data.text;
+    constructor(text: string) {
+        this.text = text
     }
 }

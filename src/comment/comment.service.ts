@@ -16,8 +16,6 @@ export class CommentService {
         @InjectRepository(CardEntity)
         private readonly cardRepository: Repository<CardEntity>,
         @InjectRepository(ColumnEntity)
-        private readonly columnRepository: Repository<ColumnEntity>,
-        @InjectRepository(UserEntity)
         private readonly userRepository: Repository<UserEntity>
     ) {}
 
@@ -44,7 +42,7 @@ export class CommentService {
             },
             relations: ['comments']
         });
-        let comment = new CommentEntity(data);
+        let comment = new CommentEntity(data.text);
         user.comments.push(comment);
         card.comments.push(comment);
         comment = await this.commentRepository.save(comment);
