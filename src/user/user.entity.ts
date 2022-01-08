@@ -1,5 +1,6 @@
 import { CardEntity } from "src/card/card.entity";
 import { ColumnEntity } from "src/column/column.entity";
+import { CommentEntity } from "src/comment/comment.entity";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('users')
@@ -31,5 +32,8 @@ export class UserEntity {
 
     @OneToMany(type => CardEntity, cards => cards.user)
     cards: CardEntity[];
+
+    @OneToMany(type => CommentEntity, comments => comments.user)
+    comments: CommentEntity[];
 
 }
