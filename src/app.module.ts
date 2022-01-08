@@ -3,11 +3,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
-import { ColumnService } from './column/column.service';
-import { CardService } from './card/card.service';
 import { CommentService } from './comment/comment.service';
-import { ColumnController } from './column/column.controller';
 import { ColumnModule } from './column/column.module';
+import { CardModule } from './card/card.module';
 
 @Module({
   imports: [
@@ -22,9 +20,10 @@ import { ColumnModule } from './column/column.module';
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
     }),
     UserModule,
-    ColumnModule
+    ColumnModule,
+    CardModule
   ],
   controllers: [AppController],
-  providers: [AppService, CardService, CommentService],
+  providers: [AppService, CommentService],
 })
 export class AppModule {}

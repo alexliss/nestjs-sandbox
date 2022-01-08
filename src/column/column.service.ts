@@ -17,8 +17,8 @@ export class ColumnService {
 
 
     async create(data: ColumnDtoRequest, userId: number): Promise<ColumnDtoResponse> {
-        let newColumn = new ColumnEntity();
-        newColumn.name = data.name;
+        let сolumn = new ColumnEntity();
+        сolumn.name = data.name;
         let user = await this.userRepository.findOne({
             where: { 
                 id: userId
@@ -29,10 +29,10 @@ export class ColumnService {
         if (!user) 
             throw new HttpException({ User: ' not found' }, 404);
 
-        user.columns.push(newColumn);
-        newColumn = await this.columnRepository.save(newColumn);
+        user.columns.push(сolumn);
+        сolumn = await this.columnRepository.save(сolumn);
         user = await this.userRepository.save(user);
-        return new ColumnDtoResponse(newColumn.id, newColumn.name, user.id, newColumn.createdAt)
+        return new ColumnDtoResponse(сolumn.id, сolumn.name, user.id, сolumn.createdAt)
     }
 
     async getByUserId(userId: number): Promise<ColumnDtoResponse[]> {
@@ -65,7 +65,6 @@ export class ColumnService {
             }, 
             relations: ['user'] 
         });
-        console.log(column);
 
         if (!column) 
             throw new HttpException({ User: ' invalid' }, 404)

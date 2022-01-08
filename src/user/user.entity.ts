@@ -1,3 +1,4 @@
+import { CardEntity } from "src/card/card.entity";
 import { ColumnEntity } from "src/column/column.entity";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
@@ -27,5 +28,8 @@ export class UserEntity {
 
     @OneToMany(type => ColumnEntity, columns => columns.user)
     columns: ColumnEntity[];
+
+    @OneToMany(type => CardEntity, cards => cards.user)
+    cards: CardEntity[];
 
 }
