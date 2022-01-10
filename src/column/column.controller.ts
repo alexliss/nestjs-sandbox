@@ -11,12 +11,12 @@ export class ColumnController {
     constructor(private readonly columnService: ColumnService) {}
     
     @UseGuards(JwtAuthGuard)
-    @Post('users/:userId/columns')
+    @Post('columns')
     async create(
-        @Body() data: ColumnDtoRequest, 
-        @Param('userId', ParseIntPipe) userId: number
+        @User() userCreds: UserCredentials,
+        @Body() data: ColumnDtoRequest
     ): Promise<ColumnDtoResponse> {
-        return this.columnService.create(data, userId);
+        return this.columnService.create(userCreds, data);
     }
 
     @UseGuards(JwtAuthGuard)

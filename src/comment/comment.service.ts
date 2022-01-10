@@ -1,5 +1,6 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UserCredentials } from 'src/authentication/user.credentials';
 import { CardEntity } from 'src/card/card.entity';
 import { ColumnEntity } from 'src/column/column.entity';
 import { UserEntity } from 'src/user/user.entity';
@@ -25,11 +26,11 @@ export class CommentService {
             throw new HttpException({ Card: ' not found'}, 404);
     }
 
-    async create(cardId: number,data: CommentDtoRequest): Promise<CommentDtoResponse> {
+    async create(userCreds: UserCredentials, cardId: number, data: CommentDtoRequest): Promise<CommentDtoResponse> {
         await this.cardExistenceCheck(cardId);
         const user = await this.userRepository.findOne({
             where: {
-                id: data.userId
+                id: userCreds.userId
             },
             relations: ['comments']
         });
@@ -50,7 +51,7 @@ export class CommentService {
         this.cardRepository.save(card);
         return new CommentDtoResponse(
             comment.id, 
-            data.userId, 
+            userCreds.userId, 
             comment.text, 
             comment.createdAt,
             comment. updatedAt)

@@ -44,6 +44,10 @@ export class UserService {
         return new UserDtoResponse(user);
       }
 
+      async findByCreds(userData: UserCredentials): Promise<UserDtoResponse> {
+        return this.findById(userData.userId)
+      }
+
       async update(userData: UserCredentials, newData: UserDtoRequest) {
         const user = await this.userRepository.findOne(userData.userId);
 

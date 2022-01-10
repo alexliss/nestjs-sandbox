@@ -1,5 +1,7 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/authentication/jwt.auth.guard';
+import { UserCredentials } from 'src/authentication/user.credentials';
+import { User } from 'src/authentication/user.decorator';
 import { CommentService } from './comment.service';
 import { CommentDtoRequest } from './dto/comment.dto.request';
 import { CommentDtoResponse } from './dto/comment.dto.response';
@@ -11,10 +13,11 @@ export class CommentController {
     @UseGuards(JwtAuthGuard)
     @Post('cards/:cardId/comments')
     async create(
+        @User() userCreds: UserCredentials,
         @Param('cardId', ParseIntPipe) cardId: number,
         @Body() data: CommentDtoRequest
     ): Promise<CommentDtoResponse> {
-            return this.commentService.create(cardId, data)
+            return this.commentService.create(userCreds, cardId, data)
     }
 
     @UseGuards(JwtAuthGuard)

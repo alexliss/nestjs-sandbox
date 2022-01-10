@@ -1,5 +1,6 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UserCredentials } from 'src/authentication/user.credentials';
 import { ColumnEntity } from 'src/column/column.entity';
 import { UserEntity } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
@@ -24,12 +25,12 @@ export class CardService {
             throw new HttpException({ Column: ' not found' }, 404);
     }
 
-    async create(columnId: number, data: CardDtoRequest): Promise<CardDtoResponse> {
+    async create(userCreds: UserCredentials, columnId: number, data: CardDtoRequest): Promise<CardDtoResponse> {
         await this.columnExistenceCheck(columnId)
 
         const user = await this.userRepository.findOne({
             where: {
-                id: data.userId
+                id: userCreds.userId
             },
             relations: ['cards']
         })

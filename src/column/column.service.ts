@@ -16,12 +16,12 @@ export class ColumnService {
         private readonly userRepository: Repository<UserEntity>
     ) {}
 
-    async create(data: ColumnDtoRequest, userId: number): Promise<ColumnDtoResponse> {
+    async create(userCreds: UserCredentials, data: ColumnDtoRequest): Promise<ColumnDtoResponse> {
         let сolumn = new ColumnEntity();
         сolumn.name = data.name;
         let user = await this.userRepository.findOne({
             where: { 
-                id: userId
+                id: userCreds.userId
             },
             relations: ['columns'] 
         });

@@ -24,6 +24,12 @@ export class UserController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @Get('me')
+    async getMyself(@User() userData: UserCredentials): Promise<UserDtoResponse> {
+        return this.userService.findByCreds(userData)
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Get(':id')
     async getById(@Param('id', ParseIntPipe) id: number): Promise<UserDtoResponse> {
         return this.userService.findById(id)

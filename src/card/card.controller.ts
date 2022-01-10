@@ -1,5 +1,7 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/authentication/jwt.auth.guard';
+import { UserCredentials } from 'src/authentication/user.credentials';
+import { User } from 'src/authentication/user.decorator';
 import { CardService } from './card.service';
 import { CardDtoRequest } from './dto/card.dto.request';
 import { CardDtoResponse } from './dto/card.dto.response';
@@ -11,10 +13,11 @@ export class CardController {
     @UseGuards(JwtAuthGuard)
     @Post('columns/:columnId/cards')
     async create(
+        @User() userCreds: UserCredentials,
         @Param('columnId', ParseIntPipe) columnId: number,
         @Body() data: CardDtoRequest
     ): Promise<CardDtoResponse> {
-        return this.cardService.create(columnId, data)
+        return this.cardService.create(userCreds, columnId, data)
     } 
 
     @UseGuards(JwtAuthGuard)
