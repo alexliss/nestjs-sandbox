@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/authentication/jwt.auth.guard';
 import { CardService } from './card.service';
 import { CardDtoRequest } from './dto/card.dto.request';
 import { CardDtoResponse } from './dto/card.dto.response';
@@ -7,6 +8,7 @@ import { CardDtoResponse } from './dto/card.dto.response';
 export class CardController {
     constructor(private readonly cardService: CardService) {}
 
+    @UseGuards(JwtAuthGuard)
     @Post('columns/:columnId/cards')
     async create(
         @Param('columnId', ParseIntPipe) columnId: number,
@@ -15,6 +17,7 @@ export class CardController {
         return this.cardService.create(columnId, data)
     } 
 
+    @UseGuards(JwtAuthGuard)
     @Get('columns/:columnId/cards')
     async getAllByColumnId(
         @Param('columnId', ParseIntPipe) columnId: number
@@ -22,6 +25,7 @@ export class CardController {
         return this.cardService.getAllByColumnId(columnId)
     }
 
+    @UseGuards(JwtAuthGuard)
     @Get('columns/:columnId/cards/:cardId')
     async getById(
         @Param('columnId', ParseIntPipe) columnId: number,
@@ -30,6 +34,7 @@ export class CardController {
         return this.cardService.getById(columnId, cardId)
     }
 
+    @UseGuards(JwtAuthGuard)
     @Put('columns/:columnId/cards/:cardId')
     async update(
         @Param('columnId', ParseIntPipe) columnId: number,
@@ -39,6 +44,7 @@ export class CardController {
         return this.cardService.update(columnId, cardId, data)
     }
     
+    @UseGuards(JwtAuthGuard)
     @Delete('columns/:columnId/cards/:cardId')
     async delete(
         @Param('columnId', ParseIntPipe) columnId: number,
