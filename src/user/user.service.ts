@@ -1,5 +1,6 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UserCredentials } from 'src/authentication/user.credentials';
 import { DeleteResult, Not, Repository } from 'typeorm';
 import { resourceLimits } from 'worker_threads';
 import { UserDtoRegisterRequest } from './dto/register/user.dto.register.request';
@@ -38,21 +39,21 @@ export class UserService {
         const user = await this.userRepository.findOne(id);
 
         if (!user) 
-            throw new HttpException({ User: ' not found' }, 404);
-    
+          throw new HttpException({ User: ' not found' }, 404);
+
         return new UserDtoResponse(user);
       }
 
-      async updateById(id:number, newData: UserDtoRequest) {
-        const user = await this.userRepository.findOne(id);
+      async update(userData: UserCredentials, newData: UserDtoRequest) {
+        const user = await this.userRepository.findOne(userData.userId);
 
         if (!user) 
             throw new HttpException({ User: ' not found' }, 404);
 
         if (await this.userRepository.findOne({ 
           where: [
-            { email : newData.email, id: Not(id) },
-            { name : newData.name, id: Not(id) }]
+            { email : newData.email, id: Not(userData.userId) },
+            { name : newData.name, id: Not(userData.userId) }]
           } )) {
             throw new HttpException({ User: ' invalid data' }, 404);
           }
@@ -62,12 +63,12 @@ export class UserService {
         return await this.userRepository.save(user)
       }
 
-      async delete(id: number): Promise<DeleteResult> {
-        const user = await this.userRepository.findOne(id);
+      async delete(userData: UserCredentials): Promise<DeleteResult> {
+        const user = await this.userRepository.findOne(userData.userId);
         if (!user) 
             throw new HttpException({ User: ' not found' }, 404);
 
-        return await this.userRepository.delete(id);
+        return await this.userRepository.delete(user);
       }
 
 }

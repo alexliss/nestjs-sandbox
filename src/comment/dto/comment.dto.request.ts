@@ -7,7 +7,6 @@ export class CommentDtoRequest {
     readonly text: string;
 
     constructor(userId: number, text: string) {
-        this.userId = userId;
         this.text = text;
     }
 }

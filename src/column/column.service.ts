@@ -1,5 +1,6 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UserCredentials } from 'src/authentication/user.credentials';
 import { UserEntity } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
 import { ColumnEntity } from './column.entity';
@@ -71,8 +72,8 @@ export class ColumnService {
         return new ColumnDtoResponse(column.id, column.name, user.id, column.createdAt)
     }
 
-    async update(id: number, userId: number, newData: ColumnDtoRequest) {
-        const user = await this.userRepository.findOne(userId);
+    async update(id: number, userData: UserCredentials, newData: ColumnDtoRequest) {
+        const user = await this.userRepository.findOne(userData.userId);
         if (!user) 
             throw new HttpException({ User: ' not found' }, 404);
         
@@ -80,7 +81,7 @@ export class ColumnService {
             where: { 
                 id: id,
                 user: {
-                    id: userId
+                    id: userData.userId
                 }
             } 
         });
@@ -91,8 +92,8 @@ export class ColumnService {
         return await this.columnRepository.save(column)
     }
 
-    async delete(id: number, userId: number) {
-        const user = await this.userRepository.findOne(userId);
+    async delete(id: number, userData: UserCredentials) {
+        const user = await this.userRepository.findOne(userData.userId);
         if (!user) 
             throw new HttpException({ User: ' not found' }, 404);
         
@@ -100,7 +101,7 @@ export class ColumnService {
             where: { 
                 id: id,
                 user: {
-                    id: userId
+                    id: userData.userId
                 }
             } 
         });

@@ -1,5 +1,7 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/authentication/jwt.auth.guard';
+import { UserCredentials } from 'src/authentication/user.credentials';
+import { User } from 'src/authentication/user.decorator';
 import { ColumnService } from './column.service';
 import { ColumnDtoRequest } from './dto/column.dto.request';
 import { ColumnDtoResponse } from './dto/column.dto.response';
@@ -35,21 +37,21 @@ export class ColumnController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Put('users/:userId/columns/:id')
+    @Put('columns/:id')
     async update(
-        @Param('id', ParseIntPipe) id: number, 
-        @Param('userId', ParseIntPipe) userId: number, 
+        @User() userData: UserCredentials,
+        @Param('id', ParseIntPipe) id: number,  
         @Body() newData: ColumnDtoRequest
     ) {
-        return this.columnService.update(id, userId, newData)
+        return this.columnService.update(id, userData, newData)
     }
 
     @UseGuards(JwtAuthGuard)
-    @Delete('users/:userId/columns/:id')
+    @Delete('columns/:id')
     async delete(
-        @Param('id', ParseIntPipe) id: number, 
-        @Param('userId', ParseIntPipe) userId: number
+        @User() userData: UserCredentials,
+        @Param('id', ParseIntPipe) id: number
     ) {
-        return this.columnService.delete(id, userId)
+        return this.columnService.delete(id, userData)
     }
 }

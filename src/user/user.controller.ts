@@ -1,6 +1,7 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, UseGuards } from '@nestjs/common';
-import { IsNotEmpty } from 'class-validator';
 import { JwtAuthGuard } from 'src/authentication/jwt.auth.guard';
+import { UserCredentials } from 'src/authentication/user.credentials';
+import { User } from 'src/authentication/user.decorator';
 import { UserDtoRegisterRequest } from './dto/register/user.dto.register.request';
 import { UserDtoRegisterResponse } from './dto/register/user.dto.register.response';
 import { UserDtoRequest } from './dto/user.dto.request';
@@ -9,8 +10,6 @@ import { UserService } from './user.service';
 
 @Controller('users')
 export class UserController {
-    //RU
-
     constructor(private readonly userService: UserService) {}
 
     @Post()
@@ -31,15 +30,15 @@ export class UserController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Put(':id')
-    async update(@Param('id', ParseIntPipe) id: number, @Body() newData: UserDtoRequest) {
-        return this.userService.updateById(id, newData)
+    @Put()
+    async update(@User() user: UserCredentials, @Body() newData: UserDtoRequest) {
+        return this.userService.update(user, newData)
     }
 
     @UseGuards(JwtAuthGuard)
-    @Delete(':id')
-    async delete(@Param('id', ParseIntPipe) id: number) {
-        return this.userService.delete(id)
+    @Delete()
+    async delete(@User() user: UserCredentials) {
+        return this.userService.delete(user)
     }
 
 }
