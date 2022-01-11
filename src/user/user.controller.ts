@@ -12,10 +12,10 @@ import { UserService } from './user.service';
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
-    @Post()
+    /*@Post()
     async create(@Body() userData: UserDtoRegisterRequest): Promise<UserDtoRegisterResponse> {
         return this.userService.createNewUser(userData);
-    }
+    }*/
 
     @UseGuards(JwtAuthGuard)
     @Get()

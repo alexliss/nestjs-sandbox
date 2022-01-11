@@ -40,19 +40,21 @@ export class CardController {
     @UseGuards(JwtAuthGuard)
     @Put('columns/:columnId/cards/:cardId')
     async update(
+        @User() userCreds: UserCredentials,
         @Param('columnId', ParseIntPipe) columnId: number,
         @Param('cardId', ParseIntPipe) cardId,
         @Body() data: CardDtoRequest
     ) {
-        return this.cardService.update(columnId, cardId, data)
+        return this.cardService.update(userCreds, columnId, cardId, data)
     }
     
     @UseGuards(JwtAuthGuard)
     @Delete('columns/:columnId/cards/:cardId')
     async delete(
+        @User() userCreds: UserCredentials,
         @Param('columnId', ParseIntPipe) columnId: number,
         @Param('cardId', ParseIntPipe) cardId
     ) {
-        return this.cardService.delete(columnId, cardId)
+        return this.cardService.delete(userCreds, columnId, cardId)
     }
 }

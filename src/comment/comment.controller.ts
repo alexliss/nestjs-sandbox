@@ -40,20 +40,22 @@ export class CommentController {
     @UseGuards(JwtAuthGuard)
     @Put('cards/:cardId/comments/:commentId')
     async update(
+        @User() userCreds: UserCredentials,
         @Param('cardId', ParseIntPipe) cardId: number,
         @Param('commentId', ParseIntPipe) commentId: number,
         @Body() data: CommentDtoRequest
     ): Promise<CommentDtoResponse> {
-        return this.commentService.update(cardId, commentId, data)
+        return this.commentService.update(userCreds, cardId, commentId, data)
     }
 
     @UseGuards(JwtAuthGuard)
     @Delete('cards/:cardId/comments/:commentId')
     async delete(
+        @User() userCreds: UserCredentials,
         @Param('cardId', ParseIntPipe) cardId: number,
         @Param('commentId', ParseIntPipe) commentId: number
     ) {
-        return this.commentService.delete(cardId, commentId)
+        return this.commentService.delete(userCreds, cardId, commentId)
     }
 
 }

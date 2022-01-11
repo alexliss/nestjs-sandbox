@@ -1,5 +1,3 @@
 export class LoginDtoResponse {
-    constructor(
-        readonly token: string
-        ) {}
+    constructor(readonly token: string) {}
 }

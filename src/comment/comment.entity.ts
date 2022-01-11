@@ -1,9 +1,8 @@
 import { CardEntity } from "src/card/card.entity";
 import { UserEntity } from "src/user/user.entity";
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { CommentDtoRequest } from "./dto/comment.dto.request";
 
-@Entity('comment')
+@Entity('comments')
 export class CommentEntity {
 
     @PrimaryGeneratedColumn('increment')

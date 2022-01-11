@@ -1,13 +1,8 @@
-import { Body, Controller, Get, HttpCode, Post, Req, UseGuards } from '@nestjs/common';
-import { UserEntity } from 'src/user/user.entity';
+import { Body, Controller, HttpCode, Post } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
 import { LoginDtoRequest } from './dto/login.dto.request';
 import { LoginDtoResponse } from './dto/login.dto.response';
 import { RegisterDtoRequest } from './dto/register.dto.request';
-import { JwtAuthGuard } from './jwt.auth.guard';
-import { UserCredentials } from './user.credentials';
-import { User } from './user.decorator';
-import { UserRequest } from './user.request.interface';
 
 @Controller()
 export class AuthenticationController {
@@ -24,9 +19,4 @@ export class AuthenticationController {
         return this.authService.register(data);
     }
 
-    @UseGuards(JwtAuthGuard)
-    @Get('whoami')
-    async whoAmI(@User() user: UserCredentials) {
-        return user;
-    }
 }

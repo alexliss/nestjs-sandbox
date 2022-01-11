@@ -6,10 +6,11 @@ import { Repository } from 'typeorm';
 import { LoginDtoRequest } from './dto/login.dto.request';
 import { LoginDtoResponse } from './dto/login.dto.response';
 import { RegisterDtoRequest } from './dto/register.dto.request';
-import { TokenPayload } from './dto/token.payload';
+import { TokenPayload } from './token.payload';
 
 @Injectable()
 export class AuthenticationService {
+
     constructor(
         @InjectRepository(UserEntity) 
         private readonly userRepository: Repository<UserEntity>,
@@ -21,26 +22,33 @@ export class AuthenticationService {
                 email: data.email
             }
         })
-        if (!user || (user.password !== data.password))
+
+        if (!user || (user.password != data.password))
             throw new HttpException('invalid data', HttpStatus.UNAUTHORIZED)
+
         const payload = new TokenPayload(user.id);
         const token = this.jwtService.sign( { payload } );
+
         return new LoginDtoResponse(token)
     }
 
     async register(data: RegisterDtoRequest): Promise<LoginDtoResponse> {
-        const dataRepeat = await this.userRepository.find({
+        const dataRepeat = await this.userRepository.findOne({
             where: [ 
                 { name: data.name },
                 { email: data.email }
             ]
         })
-        if (dataRepeat) {
+
+        if (dataRepeat) 
             throw new HttpException('invalid data', HttpStatus.BAD_REQUEST)
-        }
+        
         let user = new UserEntity(data.name, data.email, data.password);
         user = await this.userRepository.save(user);
-        const token = this.jwtService.sign(new TokenPayload(user.id))
+        
+        const payload = new TokenPayload(user.id);
+        const token = this.jwtService.sign( { payload } )
+        
         return new LoginDtoResponse(token);
     }
 }
