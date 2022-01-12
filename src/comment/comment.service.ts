@@ -42,40 +42,27 @@ export class CommentService {
             },
             relations: ['comments']
         });
+
         let comment = new CommentEntity(data.text);
         user.comments.push(comment);
         card.comments.push(comment);
         comment = await this.commentRepository.save(comment);
         this.userRepository.save(user);
         this.cardRepository.save(card);
-        return new CommentDtoResponse(
-            comment.id, 
-            userCreds.userId, 
-            comment.text, 
-            comment.createdAt,
-            comment. updatedAt)
+        return new CommentDtoResponse(comment, comment.user.id, cardId)
     }
 
-    async getById(cardId: number, commentId: number): Promise<CommentDtoResponse> {
-        await this.cardExistenceCheck(cardId)
+    async getById(commentId: number): Promise<CommentDtoResponse> {
         const comment = await this.commentRepository.findOne({
             where: {
                 id: commentId,
-                card: {
-                    id: cardId
-                }
             },
-            relations: ['user']
+            relations: ['user', 'card']
         })
         if (!comment)
             throw new HttpException({ Comment: ' not found'}, HttpStatus.NOT_FOUND)
 
-        return new CommentDtoResponse(
-            comment.id, 
-            comment.user.id, 
-            comment.text, 
-            comment.createdAt,
-            comment.updatedAt)
+        return new CommentDtoResponse(comment, comment.user.id, comment.card.id)
     }
 
     async getAllByCardId(cardId: number): Promise<CommentDtoResponse[]> {
@@ -89,57 +76,36 @@ export class CommentService {
             relations: ['user']
         })
         return comments.map(comment =>
-            new CommentDtoResponse(
-                comment.id,
-                comment.user.id,
-                comment.text,
-                comment.createdAt,
-                comment.updatedAt))
+            new CommentDtoResponse(comment, comment.user.id, cardId))
     }
     
     async update(
-        userCreds: UserCredentials,
-        cardId: number, 
-        commentId: 
-        number, 
-        data: CommentDtoRequest): Promise<CommentDtoResponse> {
-            await this.cardExistenceCheck(cardId);
-            let comment = await this.commentRepository.findOne({
-                where: {
-                    id: commentId,
-                    card: {
-                        id: cardId
-                    }
-                },
-                relations: ['user']
-            })
-        
-            if (!comment) 
-                throw new HttpException({ Card: ' not found'}, HttpStatus.NOT_FOUND)
-                
-            if (comment.user.id != userCreds.userId)
-                throw new HttpException('no permission', HttpStatus.UNAUTHORIZED)
+        userCreds: UserCredentials, 
+        commentId: number, 
+        data: CommentDtoRequest
+    ): Promise<CommentDtoResponse> {
+        let comment = await this.commentRepository.findOne({
+            where: {
+                id: commentId
+            }, relations: ['user', 'card']
+        })
 
-            comment.text = data.text;        
-            comment = await this.commentRepository.save(comment);
+        if (!comment) 
+            throw new HttpException({ Card: ' not found'}, HttpStatus.NOT_FOUND)
+            
+        if (comment.user.id != userCreds.userId)
+            throw new HttpException('no permission', HttpStatus.UNAUTHORIZED)
 
-            return new CommentDtoResponse(
-                comment.id,
-                comment.user.id,
-                comment.text,
-                comment.createdAt,
-                comment.updatedAt
-                )
+        comment.text = data.text;        
+        comment = await this.commentRepository.save(comment);
+
+        return new CommentDtoResponse(comment, comment.user.id, comment.card.id)
     }
 
-    async delete(userCreds: UserCredentials, cardId: number, commentId: number) {
-        await this.cardExistenceCheck(cardId);
+    async delete(userCreds: UserCredentials, commentId: number) {
         let comment = await this.commentRepository.findOne({
             where: {
                 id: commentId,
-                card: {
-                    id: cardId
-                }
             },
             relations: ['user']
         })
@@ -149,6 +115,7 @@ export class CommentService {
         if (comment.user.id != userCreds.userId)
             throw new HttpException('no permission', HttpStatus.UNAUTHORIZED)
 
-        return await this.commentRepository.delete(commentId)
+        await this.commentRepository.delete(commentId)
+        
     }
 }

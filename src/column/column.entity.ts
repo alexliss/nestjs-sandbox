@@ -1,6 +1,6 @@
 import { CardEntity } from "src/card/card.entity";
 import { UserEntity } from "src/user/user.entity";
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('columns')
 export class ColumnEntity {
@@ -11,7 +11,7 @@ export class ColumnEntity {
     @Column()
     name: string;
 
-    @Column({ type: 'timestamp', default: () => "CURRENT_TIMESTAMP"})
+    @CreateDateColumn()
     createdAt: Date;
 
     @ManyToOne(type => UserEntity, user => user.columns)

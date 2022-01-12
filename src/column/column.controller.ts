@@ -5,13 +5,18 @@ import { User } from 'src/authentication/user.decorator';
 import { ColumnService } from './column.service';
 import { ColumnDtoRequest } from './dto/column.dto.request';
 import { ColumnDtoResponse } from './dto/column.dto.response';
+import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('columns')
 @Controller()
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth('user-token')
 export class ColumnController {
     constructor(private readonly columnService: ColumnService) {}
-    
-    @UseGuards(JwtAuthGuard)
+
     @Post('columns')
+    @ApiCreatedResponse( { type: ColumnDtoResponse } )
+    @ApiOperation({ summary: 'Create new column' })
     async create(
         @User() userCreds: UserCredentials,
         @Body() data: ColumnDtoRequest
@@ -19,35 +24,37 @@ export class ColumnController {
         return this.columnService.create(userCreds, data);
     }
 
-    @UseGuards(JwtAuthGuard)
-    @Get('users/:userId/columns/:id')
+    @Get('columns/:id')
+    @ApiOkResponse( { type: ColumnDtoResponse } )
+    @ApiOperation({ summary: 'Get column by id' })
     async getById(
         @Param('id', ParseIntPipe) id: number, 
-        @Param('userId', ParseIntPipe) userId: number
     ): Promise<ColumnDtoResponse> {
-        return this.columnService.getById(id, userId)
+        return this.columnService.getById(id)
     }
 
-    @UseGuards(JwtAuthGuard)
     @Get('users/:userId/columns')
+    @ApiOkResponse( { type: [ColumnDtoResponse] } )
+    @ApiOperation({ summary: "Get all user's columns" })
     async getAllByUserId(
         @Param('userId', ParseIntPipe) userId: number
     ): Promise<ColumnDtoResponse[]> {
         return this.columnService.getByUserId(userId)
     }
 
-    @UseGuards(JwtAuthGuard)
     @Put('columns/:id')
+    @ApiOkResponse( { type: ColumnDtoResponse } )
+    @ApiOperation({ summary: "Edit column (if you're owner, of course)" })
     async update(
         @User() userData: UserCredentials,
         @Param('id', ParseIntPipe) id: number,  
         @Body() newData: ColumnDtoRequest
-    ) {
+    ): Promise<ColumnDtoResponse> {
         return this.columnService.update(id, userData, newData)
     }
 
-    @UseGuards(JwtAuthGuard)
     @Delete('columns/:id')
+    @ApiOperation({ summary: 'Delete your column' })
     async delete(
         @User() userData: UserCredentials,
         @Param('id', ParseIntPipe) id: number

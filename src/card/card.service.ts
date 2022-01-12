@@ -55,21 +55,17 @@ export class CardService {
         return new CardDtoResponse(card, user.id, column.id);
     }
 
-    async getById(columnId: number, cardId: number): Promise<CardDtoResponse> {
-        await this.columnExistenceCheck(columnId);
+    async getById(cardId: number): Promise<CardDtoResponse> {
         const card = await this.cardRepository.findOne({
             where: {
-                id: cardId,
-                column: {
-                    id: columnId
-                }
+                id: cardId
             },
-            relations: ['user']
+            relations: ['user', 'column']
         })
         if (!card)
             throw new HttpException({ Card: ' not found'}, HttpStatus.NOT_FOUND)
 
-        return new CardDtoResponse(card, card.user.id, columnId )
+        return new CardDtoResponse(card, card.user.id, card.column.id )
     }
 
     async getAllByColumnId(columnId: number): Promise<CardDtoResponse[]> {
@@ -87,14 +83,10 @@ export class CardService {
             new CardDtoResponse(card, card.user.id, columnId))
     }
 
-    async update(userCreds: UserCredentials, columnId: number, cardId: number, data: CardDtoRequest): Promise<CardDtoResponse> {
-        await this.columnExistenceCheck(columnId);
+    async update(userCreds: UserCredentials, cardId: number, data: CardDtoRequest): Promise<CardDtoResponse> {
         const card = await this.cardRepository.findOne({
             where: {
-                id: cardId,
-                column: {
-                    id: columnId
-                }
+                id: cardId
             },
             relations: ['user', 'column']
         })
@@ -104,7 +96,7 @@ export class CardService {
         if (card.user.id != userCreds.userId)
             throw new HttpException('no permission', HttpStatus.UNAUTHORIZED)
         
-        if (columnId != data.columnId) {
+        if (card.column.id != data.columnId) {
             await this.columnExistenceCheck(data.columnId)
             const newColumn = await this.columnRepository.findOne(data.columnId) 
             card.column = newColumn;
@@ -116,14 +108,10 @@ export class CardService {
         return new CardDtoResponse(card, card.user.id, card.column.id);
     }
 
-    async delete(userCreds: UserCredentials, columnId: number, cardId: number) {
-        await this.columnExistenceCheck(columnId);
+    async delete(userCreds: UserCredentials, cardId: number) {
         const card = await this.cardRepository.findOne({
             where: {
-                id: cardId,
-                column: {
-                    id: columnId
-                }
+                id: cardId
             }, relations: ['user']
         })
         if (!card)

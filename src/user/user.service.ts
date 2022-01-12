@@ -1,10 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserCredentials } from 'src/authentication/user.credentials';
-import { DeleteResult, Not, Repository } from 'typeorm';
-import { resourceLimits } from 'worker_threads';
-import { UserDtoRegisterRequest } from './dto/register/user.dto.register.request';
-import { UserDtoRegisterResponse } from './dto/register/user.dto.register.response';
+import { Not, Repository } from 'typeorm';
 import { UserDtoRequest } from './dto/user.dto.request';
 import { UserDtoResponse } from './dto/user.dto.response';
 import { UserEntity } from './user.entity';
@@ -21,20 +18,6 @@ export class UserService {
         return users.map(user => new UserDtoResponse(user));
       }
 
-      /*async createNewUser(data: UserDtoRegisterRequest): Promise<UserDtoRegisterResponse> {
-        const maybeUser = await this.userRepository.findOne({
-          where: [
-            { email : data.email },
-            { name : data.name }]
-        });
-        if (maybeUser) 
-            throw new HttpException({ User: ' invalid data' }, HttpStatus.NOT_FOUND);
-
-        let newUser = new UserEntity(data.name, data.email, data.password);
-        newUser = await this.userRepository.save(newUser);
-        return new UserDtoRegisterResponse(newUser.id)
-      }*/
-
       async findById(id: number): Promise<UserDtoResponse> {
         const user = await this.userRepository.findOne(id);
 
@@ -48,8 +31,8 @@ export class UserService {
         return this.findById(userData.userId)
       }
 
-      async update(userData: UserCredentials, newData: UserDtoRequest) {
-        const user = await this.userRepository.findOne(userData.userId);
+      async update(userData: UserCredentials, newData: UserDtoRequest): Promise<UserDtoResponse> {
+        let user = await this.userRepository.findOne(userData.userId);
 
         if (!user) 
             throw new HttpException({ User: ' not found' }, HttpStatus.NOT_FOUND);
@@ -59,20 +42,21 @@ export class UserService {
             { email : newData.email, id: Not(userData.userId) },
             { name : newData.name, id: Not(userData.userId) }]
           } )) {
-            throw new HttpException({ User: ' invalid data' }, HttpStatus.NOT_FOUND);
+            throw new HttpException({ User: ' invalid data' }, HttpStatus.BAD_REQUEST);
           }
         user.name = newData.name;
         user.password = newData.password;
         user.email = newData.email;
-        return await this.userRepository.save(user)
+        user = await this.userRepository.save(user)
+        return new UserDtoResponse(user)
       }
 
-      async delete(userData: UserCredentials): Promise<DeleteResult> {
+      async delete(userData: UserCredentials) {
         const user = await this.userRepository.findOne(userData.userId);
         if (!user) 
             throw new HttpException({ User: ' not found' }, HttpStatus.NOT_FOUND);
 
-        return await this.userRepository.delete(user);
+        await this.userRepository.delete(user);
       }
 
 }

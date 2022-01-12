@@ -5,13 +5,19 @@ import { User } from 'src/authentication/user.decorator';
 import { CommentService } from './comment.service';
 import { CommentDtoRequest } from './dto/comment.dto.request';
 import { CommentDtoResponse } from './dto/comment.dto.response';
+import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { CardDtoResponse } from 'src/card/dto/card.dto.response';
 
+@ApiTags('comments')
 @Controller()
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth('user-token')
 export class CommentController {
     constructor(private readonly commentService: CommentService) {}
 
-    @UseGuards(JwtAuthGuard)
     @Post('cards/:cardId/comments')
+    @ApiCreatedResponse( { type: CardDtoResponse } )
+    @ApiOperation({ summary: 'Create new comment in card' })
     async create(
         @User() userCreds: UserCredentials,
         @Param('cardId', ParseIntPipe) cardId: number,
@@ -20,42 +26,42 @@ export class CommentController {
             return this.commentService.create(userCreds, cardId, data)
     }
 
-    @UseGuards(JwtAuthGuard)
     @Get('cards/:cardId/comments')
+    @ApiOkResponse( { type: [CommentDtoResponse] } )
+    @ApiOperation({ summary: "Get all card's comments" })
     async getAllByCardId(
         @Param('cardId', ParseIntPipe) cardId: number
     ): Promise<CommentDtoResponse[]> {
         return this.commentService.getAllByCardId(cardId)
     }
 
-    @UseGuards(JwtAuthGuard)
-    @Get('cards/:cardId/comments/:commentId')
+    @Get('comments/:commentId')
+    @ApiOkResponse( { type: CommentDtoResponse } )
+    @ApiOperation({ summary: 'Get comment by id' })
     async getById(
-        @Param('cardId', ParseIntPipe) cardId: number,
         @Param('commentId', ParseIntPipe) commentId: number
     ): Promise<CommentDtoResponse> {
-        return this.commentService.getById(cardId, commentId)
+        return this.commentService.getById(commentId)
     }
 
-    @UseGuards(JwtAuthGuard)
-    @Put('cards/:cardId/comments/:commentId')
+    @Put('comments/:commentId')
+    @ApiOkResponse( { type: CommentDtoResponse } )
+    @ApiOperation({ summary: 'Edit your comment' })
     async update(
         @User() userCreds: UserCredentials,
-        @Param('cardId', ParseIntPipe) cardId: number,
         @Param('commentId', ParseIntPipe) commentId: number,
         @Body() data: CommentDtoRequest
     ): Promise<CommentDtoResponse> {
-        return this.commentService.update(userCreds, cardId, commentId, data)
+        return this.commentService.update(userCreds, commentId, data)
     }
 
-    @UseGuards(JwtAuthGuard)
-    @Delete('cards/:cardId/comments/:commentId')
+    @Delete('comments/:commentId')
+    @ApiOperation({ summary: 'Delete your comment' })
     async delete(
         @User() userCreds: UserCredentials,
-        @Param('cardId', ParseIntPipe) cardId: number,
         @Param('commentId', ParseIntPipe) commentId: number
     ) {
-        return this.commentService.delete(userCreds, cardId, commentId)
+        return this.commentService.delete(userCreds, commentId)
     }
 
 }
