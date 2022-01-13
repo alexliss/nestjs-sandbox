@@ -1,4 +1,4 @@
-export const JWT_SECRET = 'THE_HAPPINESS_INCIDENT';
+export const JWT_SECRET = 'KPEBEDKO';
 export const JWT_EXPIRE = '24h';
 
 export const DB_HOST = 'host';

@@ -17,10 +17,14 @@ export class CommentEntity {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    @ManyToOne(type => UserEntity, user => user.comments)
+    @ManyToOne(type => UserEntity, user => user.comments, {
+        onDelete: 'CASCADE'
+    })
     user: UserEntity;
 
-    @ManyToOne(type => CardEntity, card => card.comments)
+    @ManyToOne(type => CardEntity, card => card.comments, {
+        onDelete: 'CASCADE'
+    })
     card: CardEntity;
 
     constructor(text: string) {

@@ -21,10 +21,14 @@ export class CardEntity {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    @ManyToOne(type => ColumnEntity, column => column.cards)
+    @ManyToOne(type => ColumnEntity, column => column.cards, {
+        onDelete: 'CASCADE'
+    })
     column: ColumnEntity;
 
-    @ManyToOne(type => UserEntity, user => user.cards)
+    @ManyToOne(type => UserEntity, user => user.cards, {
+        onDelete: 'CASCADE'
+    })
     user: UserEntity;
 
     @OneToMany(type => CommentEntity, comments => comments.card)
