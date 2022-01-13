@@ -22,7 +22,7 @@ export class UserService {
         const user = await this.userRepository.findOne(id);
 
         if (!user) 
-          throw new HttpException({ User: ' not found' }, HttpStatus.NOT_FOUND);
+          throw new HttpException({ User: 'not found' }, HttpStatus.NOT_FOUND);
 
         return new UserDtoResponse(user);
       }
@@ -35,14 +35,14 @@ export class UserService {
         let user = await this.userRepository.findOne(userData.userId);
 
         if (!user) 
-            throw new HttpException({ User: ' not found' }, HttpStatus.NOT_FOUND);
+            throw new HttpException({ User: 'not found' }, HttpStatus.NOT_FOUND);
 
         if (await this.userRepository.findOne({ 
           where: [
             { email : newData.email, id: Not(userData.userId) },
             { name : newData.name, id: Not(userData.userId) }]
           } )) {
-            throw new HttpException({ User: ' invalid data' }, HttpStatus.BAD_REQUEST);
+            throw new HttpException({ User: 'invalid data' }, HttpStatus.BAD_REQUEST);
           }
         user.name = newData.name;
         user.password = newData.password;
@@ -54,9 +54,9 @@ export class UserService {
       async delete(userData: UserCredentials) {
         const user = await this.userRepository.findOne(userData.userId);
         if (!user) 
-            throw new HttpException({ User: ' not found' }, HttpStatus.NOT_FOUND);
+            throw new HttpException({ User: 'not found' }, HttpStatus.NOT_FOUND);
 
-        await this.userRepository.delete(user);
+        await this.userRepository.delete(user.id);
       }
 
 }

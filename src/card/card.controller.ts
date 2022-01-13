@@ -6,6 +6,7 @@ import { CardService } from './card.service';
 import { CardDtoRequest } from './dto/card.dto.request';
 import { CardDtoResponse } from './dto/card.dto.response';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { CardUpdateDtoRequest } from './dto/card.update.dto.request';
 
 @ApiTags('cards')
 @Controller()
@@ -38,7 +39,7 @@ export class CardController {
     @ApiOkResponse( { type: CardDtoResponse } )
     @ApiOperation({ summary: 'Get card by id' })
     async getById(
-        @Param('cardId', ParseIntPipe) cardId
+        @Param('cardId', ParseIntPipe) cardId: number
     ): Promise<CardDtoResponse> {
         return this.cardService.getById(cardId)
     }
@@ -48,8 +49,8 @@ export class CardController {
     @ApiOperation({ summary: 'Edit your card' })
     async update(
         @User() userCreds: UserCredentials,
-        @Param('cardId', ParseIntPipe) cardId,
-        @Body() data: CardDtoRequest
+        @Param('cardId', ParseIntPipe) cardId: number,
+        @Body() data: CardUpdateDtoRequest
     ): Promise<CardDtoResponse> {
         return this.cardService.update(userCreds, cardId, data)
     }
@@ -59,7 +60,7 @@ export class CardController {
     @ApiOperation({ summary: 'Delete your card' })
     async delete(
         @User() userCreds: UserCredentials,
-        @Param('cardId', ParseIntPipe) cardId
+        @Param('cardId', ParseIntPipe) cardId: number
     ) {
         return this.cardService.delete(userCreds, cardId)
     }

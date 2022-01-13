@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { CardEntity } from './card.entity';
 import { CardDtoRequest } from './dto/card.dto.request';
 import { CardDtoResponse } from './dto/card.dto.response';
+import { CardUpdateDtoRequest } from './dto/card.update.dto.request';
 
 @Injectable()
 export class CardService {
@@ -83,7 +84,7 @@ export class CardService {
             new CardDtoResponse(card, card.user.id, columnId))
     }
 
-    async update(userCreds: UserCredentials, cardId: number, data: CardDtoRequest): Promise<CardDtoResponse> {
+    async update(userCreds: UserCredentials, cardId: number, data: CardUpdateDtoRequest): Promise<CardDtoResponse> {
         const card = await this.cardRepository.findOne({
             where: {
                 id: cardId

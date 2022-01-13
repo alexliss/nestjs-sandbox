@@ -22,7 +22,7 @@ export class CommentService {
     private async cardExistenceCheck(cardId: number) {
         const card = await this.cardRepository.findOne(cardId);
         if (!card) 
-            throw new HttpException({ Card: ' not found'}, HttpStatus.NOT_FOUND);
+            throw new HttpException({ Card: 'not found'}, HttpStatus.NOT_FOUND);
     }
 
     async create(userCreds: UserCredentials, cardId: number, data: CommentDtoRequest): Promise<CommentDtoResponse> {
@@ -34,7 +34,7 @@ export class CommentService {
             relations: ['comments']
         });
         if (!user) 
-            throw new HttpException({CommentUser: ' not found'}, HttpStatus.NOT_FOUND)
+            throw new HttpException({CommentUser: 'not found'}, HttpStatus.NOT_FOUND)
 
         const card = await this.cardRepository.findOne({
             where: {
@@ -49,7 +49,7 @@ export class CommentService {
         comment = await this.commentRepository.save(comment);
         this.userRepository.save(user);
         this.cardRepository.save(card);
-        return new CommentDtoResponse(comment, comment.user.id, cardId)
+        return new CommentDtoResponse(comment, user.id, cardId)
     }
 
     async getById(commentId: number): Promise<CommentDtoResponse> {
@@ -60,7 +60,7 @@ export class CommentService {
             relations: ['user', 'card']
         })
         if (!comment)
-            throw new HttpException({ Comment: ' not found'}, HttpStatus.NOT_FOUND)
+            throw new HttpException({ Comment: 'not found'}, HttpStatus.NOT_FOUND)
 
         return new CommentDtoResponse(comment, comment.user.id, comment.card.id)
     }
@@ -91,7 +91,7 @@ export class CommentService {
         })
 
         if (!comment) 
-            throw new HttpException({ Card: ' not found'}, HttpStatus.NOT_FOUND)
+            throw new HttpException({ Card: 'not found'}, HttpStatus.NOT_FOUND)
             
         if (comment.user.id != userCreds.userId)
             throw new HttpException('no permission', HttpStatus.UNAUTHORIZED)
@@ -105,12 +105,12 @@ export class CommentService {
     async delete(userCreds: UserCredentials, commentId: number) {
         let comment = await this.commentRepository.findOne({
             where: {
-                id: commentId,
+                id: commentId
             },
             relations: ['user']
         })
         if (!comment) 
-            throw new HttpException({ Card: ' not found'}, HttpStatus.NOT_FOUND)
+            throw new HttpException({ Card: 'not found'}, HttpStatus.NOT_FOUND)
 
         if (comment.user.id != userCreds.userId)
             throw new HttpException('no permission', HttpStatus.UNAUTHORIZED)

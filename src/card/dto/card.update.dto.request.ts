@@ -1,7 +1,10 @@
-import { IsNotEmpty } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
+import { IsNotEmpty, IsNumber } from "class-validator";
 
-export class CardDtoRequest {
+export class CardUpdateDtoRequest {
+    @ApiProperty()
+    @IsNumber()
+    columnId: number;
 
     @ApiProperty()
     @IsNotEmpty()
