@@ -1,22 +1,22 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ColumnEntity } from './column.entity';
+import { CardEntity } from './card.entity';
 
 @Injectable()
-export class ColumnOwnerGuard implements CanActivate {
+export class CardOwnerGuard implements CanActivate {
   constructor(
-    @InjectRepository(ColumnEntity)
-    private readonly columnRepository: Repository<ColumnEntity>
+    @InjectRepository(CardEntity)
+    private readonly cardRepository: Repository<CardEntity>
     ) {}
-
+  
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const columnId = request.params.id;
+    const cardId = request.params.id;
 
-    const column = await this.columnRepository.findOneOrFail(columnId);
+    const card = await this.cardRepository.findOneOrFail(cardId);
     
-    if (request.user.userId != column.userId) {
+    if (request.user.userId != card.userId) {
       throw new UnauthorizedException();
     }
 

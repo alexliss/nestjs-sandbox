@@ -7,6 +7,7 @@ import { CardDtoRequest } from './dto/card.dto.request';
 import { CardDtoResponse } from './dto/card.dto.response';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CardUpdateDtoRequest } from './dto/card.update.dto.request';
+import { CardOwnerGuard } from './card-owner.guard';
 
 @ApiTags('cards')
 @Controller()
@@ -44,6 +45,7 @@ export class CardController {
         return this.cardService.getById(cardId)
     }
 
+    @UseGuards(CardOwnerGuard)
     @Put('cards/:cardId')
     @ApiOkResponse( { type: CardDtoResponse } )
     @ApiOperation({ summary: 'Edit your card' })
@@ -55,7 +57,7 @@ export class CardController {
         return this.cardService.update(userCreds, cardId, data)
     }
     
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(CardOwnerGuard)
     @Delete('cards/:cardId')
     @ApiOperation({ summary: 'Delete your card' })
     async delete(

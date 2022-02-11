@@ -15,6 +15,12 @@ export class CardEntity {
     @Column()
     description: string;
 
+    @Column()
+    userId: number;
+
+    @Column()
+    columnId: number;
+
     @CreateDateColumn()
     createdAt: Date;
 

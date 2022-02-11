@@ -24,13 +24,13 @@ export class CardDtoResponse {
     @ApiProperty()
     columnId: number;
 
-    constructor(card: CardEntity, userId: number, columnId: number) {
+    constructor(card: CardEntity) {
             this.id = card.id;
             this.title = card.title;
             this.description = card.description;
             this.createdAt = card.createdAt;
             this.updatedAt = card.updatedAt;
-            this.userId = userId;
-            this.columnId = columnId;
+            this.userId = card.userId;
+            this.columnId = card.columnId;
     }
 }
