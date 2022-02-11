@@ -11,6 +11,9 @@ export class ColumnEntity {
     @Column()
     name: string;
 
+    @Column('userId')
+    userId: number;
+
     @CreateDateColumn()
     createdAt: Date;
 

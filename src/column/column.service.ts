@@ -19,89 +19,65 @@ export class ColumnService {
     async create(userCreds: UserCredentials, data: ColumnDtoRequest): Promise<ColumnDtoResponse> {
         let column = new ColumnEntity();
         column.name = data.name;
-        let user = await this.userRepository.findOne({
+        let user = await this.userRepository.findOneOrFail({
             where: { 
                 id: userCreds.userId
             },
             relations: ['columns'] 
         });
 
-        if (!user) 
-            throw new HttpException({ User: 'not found' }, HttpStatus.NOT_FOUND);
-
         user.columns.push(column);
         column = await this.columnRepository.save(column);
         user = await this.userRepository.save(user);
-        return new ColumnDtoResponse(column, user.id)
+        return new ColumnDtoResponse(column)
     }
 
     async getByUserId(userId: number): Promise<ColumnDtoResponse[]> {
-        const user = await this.userRepository.findOne({ 
+        const user = await this.userRepository.findOneOrFail({ 
             where: { 
                 id: userId 
             }, 
             relations: ['columns'] 
         });
 
-        if (!user) 
-            throw new HttpException({ User: 'not found' }, HttpStatus.NOT_FOUND);
-
         return user.columns.map(column => 
-            new ColumnDtoResponse(column, user.id)
+            new ColumnDtoResponse(column)
         )
     }
 
     async getById(id: number): Promise<ColumnDtoResponse> {
-        const column = await this.columnRepository.findOne({ 
+        const column = await this.columnRepository.findOneOrFail({ 
             where: { 
                 id: id
-            }, 
-            relations: ['user'] 
+            }
         });
 
-        if (!column) 
-            throw new HttpException({ Column: 'invalid' }, HttpStatus.NOT_FOUND)
-        
-        return new ColumnDtoResponse(column, column.user.id)
+        return new ColumnDtoResponse(column)
     }
 
     async update(id: number, userCreds: UserCredentials, newData: ColumnDtoRequest) {
-        const user = await this.userRepository.findOne(userCreds.userId);
-        if (!user) 
-            throw new HttpException({ User: 'not found' }, HttpStatus.NOT_FOUND);
+        const user = await this.userRepository.findOneOrFail(userCreds.userId);
         
-        let column = await this.columnRepository.findOne({ 
+        let column = await this.columnRepository.findOneOrFail({ 
             where: { 
                 id: id
-            }, relations: ['user']
+            }
         });
-        if (!column) 
-            throw new HttpException({ Column: 'not found' }, HttpStatus.NOT_FOUND);
-
-        if (column.user.id != userCreds.userId)
-            throw new HttpException('no permission', HttpStatus.UNAUTHORIZED)
 
         column.name = newData.name;
         column = await this.columnRepository.save(column)
 
-        return new ColumnDtoResponse(column, column.user.id)
+        return new ColumnDtoResponse(column)
     }
 
     async delete(id: number, userCreds: UserCredentials) {
-        const user = await this.userRepository.findOne(userCreds.userId);
-        if (!user) 
-            throw new HttpException({ User: 'not found' }, HttpStatus.NOT_FOUND);
+        const user = await this.userRepository.findOneOrFail(userCreds.userId);
         
-        const column = await this.columnRepository.findOne({ 
+        const column = await this.columnRepository.findOneOrFail({ 
             where: { 
                 id: id
             }, relations: ['user']
         });
-        if (!column) 
-            throw new HttpException({ Column: 'not found' }, HttpStatus.NOT_FOUND);
-        
-        if (column.user.id != userCreds.userId)
-            throw new HttpException('no permission', HttpStatus.UNAUTHORIZED)
 
         await this.columnRepository.delete(id)
     }

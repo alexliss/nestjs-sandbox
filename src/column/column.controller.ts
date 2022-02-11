@@ -6,6 +6,7 @@ import { ColumnService } from './column.service';
 import { ColumnDtoRequest } from './dto/column.dto.request';
 import { ColumnDtoResponse } from './dto/column.dto.response';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ColumnOwnerGuard } from './column-owner.guard';
 
 @ApiTags('columns')
 @Controller()
@@ -43,6 +44,7 @@ export class ColumnController {
     }
 
     @Put('columns/:id')
+    @UseGuards(ColumnOwnerGuard)
     @ApiOkResponse( { type: ColumnDtoResponse } )
     @ApiOperation({ summary: "Edit column (if you're owner, of course)" })
     async update(
@@ -54,6 +56,7 @@ export class ColumnController {
     }
 
     @Delete('columns/:id')
+    @UseGuards(ColumnOwnerGuard)
     @ApiOperation({ summary: 'Delete your column' })
     async delete(
         @User() userData: UserCredentials,

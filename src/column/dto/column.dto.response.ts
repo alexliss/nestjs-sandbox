@@ -15,10 +15,10 @@ export class ColumnDtoResponse {
     @ApiProperty()
     readonly createdAt: Date;
 
-    constructor(column: ColumnEntity, userId: number) {
+    constructor(column: ColumnEntity) {
         this.id = column.id;
         this.name = column.name;
-        this.userId = userId;
+        this.userId = column.userId;
         this.createdAt = column.createdAt;
     }
 }
