@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/user/user.entity';
@@ -7,6 +7,7 @@ import { LoginDtoRequest } from './dto/login.dto.request';
 import { LoginDtoResponse } from './dto/login.dto.response';
 import { RegisterDtoRequest } from './dto/register.dto.request';
 import { TokenPayload } from './token.payload';
+import { UserCredentials } from './user.credentials';
 
 @Injectable()
 export class AuthenticationService {
@@ -16,17 +17,8 @@ export class AuthenticationService {
         private readonly userRepository: Repository<UserEntity>,
         private readonly jwtService: JwtService) {}
 
-    async login(data: LoginDtoRequest): Promise<LoginDtoResponse> {
-        const user = await this.userRepository.findOne({
-            where: {
-                email: data.email
-            }
-        })
-
-        if (!user || (user.password != data.password))
-            throw new HttpException('invalid data', HttpStatus.UNAUTHORIZED)
-
-        const payload = new TokenPayload(user.id);
+    async login(userCreds: UserCredentials): Promise<LoginDtoResponse> {
+        const payload = new TokenPayload(userCreds.userId);
         const token = this.jwtService.sign( { payload } );
 
         return new LoginDtoResponse(token)
@@ -50,5 +42,19 @@ export class AuthenticationService {
         const token = this.jwtService.sign( { payload } )
         
         return new LoginDtoResponse(token);
+    }
+
+    async validateUser(email: string, password: string): Promise<UserCredentials> {
+        const user = await this.userRepository.findOneOrFail( {
+            where: {
+                email: email
+            }
+        })
+
+        if (user.password != password) {
+            throw new UnauthorizedException();
+        }
+
+        return new UserCredentials(user.id)
     }
 }

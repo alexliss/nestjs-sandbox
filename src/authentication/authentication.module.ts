@@ -7,9 +7,10 @@ import { AuthenticationController } from './authentication.controller';
 import { AuthenticationService } from './authentication.service';
 import { JwtStrategy } from './jwt.strategy';
 import { JWT_SECRET, JWT_EXPIRE } from 'src/config';
+import { LocalStrategy } from './local.strategy';
 
 @Module({
-  providers: [AuthenticationService, JwtStrategy],
+  providers: [AuthenticationService, JwtStrategy, LocalStrategy],
   controllers: [AuthenticationController],
   imports: [
     TypeOrmModule.forFeature([UserEntity]),
