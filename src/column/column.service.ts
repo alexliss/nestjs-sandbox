@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserCredentials } from 'src/authentication/user.credentials';
 import { UserEntity } from 'src/user/user.entity';
@@ -55,9 +55,7 @@ export class ColumnService {
         return new ColumnDtoResponse(column)
     }
 
-    async update(id: number, userCreds: UserCredentials, newData: ColumnDtoRequest) {
-        const user = await this.userRepository.findOneOrFail(userCreds.userId);
-        
+    async update(id: number, newData: ColumnDtoRequest) {
         let column = await this.columnRepository.findOneOrFail({ 
             where: { 
                 id: id
@@ -70,13 +68,11 @@ export class ColumnService {
         return new ColumnDtoResponse(column)
     }
 
-    async delete(id: number, userCreds: UserCredentials) {
-        const user = await this.userRepository.findOneOrFail(userCreds.userId);
-        
-        const column = await this.columnRepository.findOneOrFail({ 
+    async delete(id: number) {
+        await this.columnRepository.findOneOrFail({ 
             where: { 
                 id: id
-            }, relations: ['user']
+            }
         });
 
         await this.columnRepository.delete(id)

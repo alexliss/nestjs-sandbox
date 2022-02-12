@@ -10,6 +10,12 @@ export class CommentEntity {
 
     @Column()
     text: string;
+    
+    @Column()
+    userId: number;
+
+    @Column()
+    cardId: number;
 
     @CreateDateColumn()
     createdAt: Date;

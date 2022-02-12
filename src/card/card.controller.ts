@@ -50,20 +50,18 @@ export class CardController {
     @ApiOkResponse( { type: CardDtoResponse } )
     @ApiOperation({ summary: 'Edit your card' })
     async update(
-        @User() userCreds: UserCredentials,
         @Param('cardId', ParseIntPipe) cardId: number,
         @Body() data: CardUpdateDtoRequest
     ): Promise<CardDtoResponse> {
-        return this.cardService.update(userCreds, cardId, data)
+        return this.cardService.update(cardId, data)
     }
     
     @UseGuards(CardOwnerGuard)
     @Delete('cards/:cardId')
     @ApiOperation({ summary: 'Delete your card' })
     async delete(
-        @User() userCreds: UserCredentials,
         @Param('cardId', ParseIntPipe) cardId: number
     ) {
-        return this.cardService.delete(userCreds, cardId)
+        return this.cardService.delete(cardId)
     }
 }

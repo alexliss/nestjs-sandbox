@@ -21,10 +21,10 @@ export class CommentDtoResponse {
     @ApiProperty()
     readonly updatedAt: Date;
 
-    constructor(comment: CommentEntity, userId: number, cardId: number) {
+    constructor(comment: CommentEntity) {
         this.id = comment.id;
-        this.userId = userId;
-        this.cardId = cardId;
+        this.userId = comment.userId;
+        this.cardId = comment.cardId;
         this.text = comment.text;
         this.createdAt = comment.createdAt;
         this.updatedAt = comment.updatedAt;

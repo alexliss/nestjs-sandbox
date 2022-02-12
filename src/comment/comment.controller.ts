@@ -7,6 +7,7 @@ import { CommentDtoRequest } from './dto/comment.dto.request';
 import { CommentDtoResponse } from './dto/comment.dto.response';
 import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CardDtoResponse } from 'src/card/dto/card.dto.response';
+import { CommentOwnerGuard } from './comment-owner.guard';
 
 @ApiTags('comments')
 @Controller()
@@ -44,24 +45,24 @@ export class CommentController {
         return this.commentService.getById(commentId)
     }
 
+    @UseGuards(CommentOwnerGuard)
     @Put('comments/:commentId')
     @ApiOkResponse( { type: CommentDtoResponse } )
     @ApiOperation({ summary: 'Edit your comment' })
     async update(
-        @User() userCreds: UserCredentials,
         @Param('commentId', ParseIntPipe) commentId: number,
         @Body() data: CommentDtoRequest
     ): Promise<CommentDtoResponse> {
-        return this.commentService.update(userCreds, commentId, data)
+        return this.commentService.update(commentId, data)
     }
 
+    @UseGuards(CommentOwnerGuard)
     @Delete('comments/:commentId')
     @ApiOperation({ summary: 'Delete your comment' })
     async delete(
-        @User() userCreds: UserCredentials,
         @Param('commentId', ParseIntPipe) commentId: number
     ) {
-        return this.commentService.delete(userCreds, commentId)
+        return this.commentService.delete(commentId)
     }
 
 }

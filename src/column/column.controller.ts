@@ -48,20 +48,18 @@ export class ColumnController {
     @ApiOkResponse( { type: ColumnDtoResponse } )
     @ApiOperation({ summary: "Edit column (if you're owner, of course)" })
     async update(
-        @User() userData: UserCredentials,
         @Param('id', ParseIntPipe) id: number,  
         @Body() newData: ColumnDtoRequest
     ): Promise<ColumnDtoResponse> {
-        return this.columnService.update(id, userData, newData)
+        return this.columnService.update(id, newData)
     }
 
     @Delete('columns/:id')
     @UseGuards(ColumnOwnerGuard)
     @ApiOperation({ summary: 'Delete your column' })
     async delete(
-        @User() userData: UserCredentials,
         @Param('id', ParseIntPipe) id: number
     ) {
-        return this.columnService.delete(id, userData)
+        return this.columnService.delete(id)
     }
 }

@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserCredentials } from 'src/authentication/user.credentials';
 import { ColumnEntity } from 'src/column/column.entity';
@@ -48,10 +48,10 @@ export class CardService {
         return new CardDtoResponse(card);
     }
 
-    async getById(cardId: number): Promise<CardDtoResponse> {
+    async getById(id: number): Promise<CardDtoResponse> {
         const card = await this.cardRepository.findOneOrFail({
             where: {
-                id: cardId
+                id: id
             }
         })
         
@@ -70,14 +70,14 @@ export class CardService {
             new CardDtoResponse(card))
     }
 
-    async update(userCreds: UserCredentials, cardId: number, data: CardUpdateDtoRequest): Promise<CardDtoResponse> {
+    async update(id: number, data: CardUpdateDtoRequest): Promise<CardDtoResponse> {
         const card = await this.cardRepository.findOneOrFail({
             where: {
-                id: cardId
+                id: id
             }
         })
         
-        if (card.column.id != data.columnId) {
+        if (card.columnId != data.columnId) {
             const newColumn = await this.columnRepository.findOneOrFail(data.columnId) 
             card.column = newColumn;
             card.columnId = data.columnId;
@@ -89,13 +89,13 @@ export class CardService {
         return new CardDtoResponse(card);
     }
 
-    async delete(userCreds: UserCredentials, cardId: number) {
-        const card = await this.cardRepository.findOneOrFail({
+    async delete(id: number) {
+        await this.cardRepository.findOneOrFail({
             where: {
-                id: cardId
+                id: id
             }
         })
 
-        return await this.cardRepository.delete(cardId)
+        return await this.cardRepository.delete(id)
     }
 }
