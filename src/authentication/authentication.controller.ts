@@ -18,7 +18,7 @@ export class AuthenticationController {
     @HttpCode(200)
     @ApiOkResponse( { type: LoginDtoResponse } )
     @ApiOperation({ summary: 'Log in by email & password' })
-    async login(@User() userCreds: UserCredentials): Promise<LoginDtoResponse> {
+    async login(@User() userCreds: UserCredentials, @Body() data: LoginDtoRequest): Promise<LoginDtoResponse> {
         return this.authService.login(userCreds)
     }
 

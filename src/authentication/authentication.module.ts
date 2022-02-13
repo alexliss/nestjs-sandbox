@@ -8,6 +8,7 @@ import { AuthenticationService } from './authentication.service';
 import { JwtStrategy } from './jwt.strategy';
 import { JWT_SECRET, JWT_EXPIRE } from 'src/config';
 import { LocalStrategy } from './local.strategy';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
   providers: [AuthenticationService, JwtStrategy, LocalStrategy],
@@ -15,6 +16,7 @@ import { LocalStrategy } from './local.strategy';
   imports: [
     TypeOrmModule.forFeature([UserEntity]),
     PassportModule,
+    UserModule,
     JwtModule.register({
       secret: JWT_SECRET,
       signOptions: { expiresIn: JWT_EXPIRE },
