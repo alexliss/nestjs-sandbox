@@ -3,11 +3,11 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/user/user.entity';
 import { Repository } from 'typeorm';
-import { LoginDtoRequest } from './dto/login.dto.request';
 import { LoginDtoResponse } from './dto/login.dto.response';
 import { RegisterDtoRequest } from './dto/register.dto.request';
 import { TokenPayload } from './token.payload';
 import { UserCredentials } from './user.credentials';
+import * as argon2 from "argon2";
 
 @Injectable()
 export class AuthenticationService {
@@ -32,10 +32,12 @@ export class AuthenticationService {
             ]
         })
 
-        if (dataRepeat) 
+        if (dataRepeat) { 
             throw new HttpException('invalid data', HttpStatus.BAD_REQUEST)
-        
-        let user = new UserEntity(data.name, data.email, data.password);
+        }
+
+        const hashedPass = await argon2.hash(data.password)
+        let user = new UserEntity(data.name, data.email, hashedPass);
         user = await this.userRepository.save(user);
         
         const payload = new TokenPayload(user.id);
@@ -51,7 +53,8 @@ export class AuthenticationService {
             }
         })
 
-        if (user.password != password) {
+        const isSame = await argon2.verify(user.password, password)
+        if (!isSame) {
             throw new UnauthorizedException();
         }
 

@@ -6,6 +6,7 @@ import { ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestj
 import { LocalAuthGuard } from './local.auth.guard';
 import { User } from './user.decorator';
 import { UserCredentials } from './user.credentials';
+import { LoginDtoRequest } from './dto/login.dto.request';
 
 @ApiTags('auth')
 @Controller()
